@@ -1,0 +1,1 @@
+This is a project to initialize go-web-project https://github.com/jasontconnell/go-web-project

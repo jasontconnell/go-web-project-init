@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"net/url"
 	"os"
 	"strings"
 
@@ -11,10 +12,10 @@ import (
 	"github.com/jasontconnell/go-web-project-init/process"
 )
 
-var live bool = false
+const githubzip string = "https://github.com/jasontconnell/go-web-project/archive/refs/heads/master.zip"
 
 func main() {
-	repo := flag.String("file", "https://github.com/jasontconnell/go-web-project/archive/refs/heads/master.zip", "the zip file location")
+	repo := flag.String("file", githubzip, "the zip file location")
 	project := flag.String("project", "", "the project name")
 	keyValues := flag.String("kvfile", "", "the key value file for replacements")
 	dest := flag.String("dest", "", "output destination")
@@ -27,7 +28,16 @@ func main() {
 
 	var b []byte
 	var err error
-	if live {
+	var download bool = false
+
+	loc, err := url.Parse(*repo)
+	if err == nil && loc.Scheme != "" {
+		log.Println("downloading " + loc.String())
+	} else {
+		log.Println("opening local file " + loc.String())
+	}
+
+	if download {
 		b, err = process.DownloadFile(*repo)
 		if err != nil {
 			log.Fatal(err)
