@@ -15,7 +15,7 @@ import (
 const githubzip string = "https://github.com/jasontconnell/go-web-project/archive/refs/heads/master.zip"
 
 func main() {
-	repo := flag.String("file", githubzip, "the zip file location")
+	file := flag.String("file", githubzip, "the zip file location")
 	project := flag.String("project", "", "the project name")
 	keyValues := flag.String("kvfile", "", "the key value file for replacements")
 	dest := flag.String("dest", "", "output destination")
@@ -30,21 +30,21 @@ func main() {
 	var err error
 	var download bool = false
 
-	loc, err := url.Parse(*repo)
-	if err == nil && loc.Scheme != "" {
-		log.Println("downloading " + loc.String())
-	} else {
-		log.Println("opening local file " + loc.String())
+	loc, err := url.Parse(*file)
+	if err == nil && (loc.Scheme == "https" || loc.Scheme == "http" || loc.Scheme == "file") {
+		download = true
+	} else if err != nil {
+		log.Fatal(fmt.Errorf("can't parse file %s %w", *file, err))
 	}
 
 	if download {
-		b, err = process.DownloadFile(*repo)
+		b, err = process.DownloadFile(*file)
 		if err != nil {
 			log.Fatal(err)
 		}
 		log.Println(len(b))
 	} else {
-		b, err = os.ReadFile("./go-web-project-master.zip")
+		b, err = os.ReadFile(*file)
 		if err != nil {
 			log.Fatal(err)
 		}
